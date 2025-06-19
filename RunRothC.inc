@@ -22,8 +22,8 @@
     DStr inputfile, "RothC_input.dat"
     ;DStr inputfile, "RothC_input_Morocco.dat"
 
-    DStr monthfile, "month_results.out"
-    DStr yearfile, "year_results.out"
+    DStr monthfile, "month_results.csv"
+    DStr yearfile, "year_results.csv"
 
     DStr title1, "  obs    year   month  modern   Tmp  Rain  Evap   C_inp  FYM  PC  DPM_RPM"
     DStr points, "  ...    ....      ..    ...    ...   ...   ...     ...  ...  ..      ..."

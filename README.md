@@ -35,7 +35,7 @@ The file RothC_input.dat contains input variables example for the model. Current
 
 ### Outputs
 
-This example create files year_results.out and month_results.out with space separated values. They contains the yearly or monthly values of the SOC (both the pools and Total) and the delta 14-carbon.
+This example create files year_results.out and month_results.out with comma separated values. They contains the yearly or monthly values of the SOC (both the pools and Total) and the delta 14-carbon.
  
 ##License
 
