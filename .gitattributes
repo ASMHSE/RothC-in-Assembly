@@ -37,9 +37,11 @@ SmplMath/documentation/* linguist-documentation
 *.url       binary
 *.dlg       binary
 *.x         binary
+*.csv       text diff=astextplain eol=crlf linguist-generated
+*.dat       text diff=astextplain eol=crlf linguist-generated
 
 # Documents
-*.pdf       binary
+*.pdf       binary linguist-documentation
 *.json      text
 *.xml       text
 *.xls       binary
@@ -115,9 +117,10 @@ SmplMath/documentation/* linguist-documentation
 *.dbf       binary
 
 # Text files where line endings should be preserved
-*.patch     text
+*.patch         text
+ObjAsm-C.2_EULA	text linguist-vendored
 
 # Exclude files from exporting
-#.gitattributes export-ignore
-.gitignore  export-ignore
-.gitkeep    export-ignore
+.gitattributes export-ignore
+.gitignore     export-ignore
+.gitkeep       export-ignore

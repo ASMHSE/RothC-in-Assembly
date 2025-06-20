@@ -47,14 +47,11 @@ Method AppRothC.Init, uses xbx
 MethodEnd
 
 Method AppRothC.Done, uses xbx
-
     SetObject xbx
     Destroy [xbx].model
 MethodEnd
 
 Method AppRothC.Initial, uses xbx xsi
-    
-    DbgText "AppRothC.Initial"
 
     SetObject xbx
 
@@ -109,20 +106,20 @@ NextToken proc
 NextToken endp
 
         LoadTokenR8 macro var, whatnext
-	        invoke NextToken
-	        mov   pline, xax
-	        invoke StrToSt0A, xbx
-	       % fstp  &var
-	        ifb <whatnext>
+            invoke NextToken
+            mov   pline, xax
+            invoke StrToSt0A, xbx
+           % fstp  &var
+            ifb <whatnext>
                 mov   xbx, pline
             endif
         endm 
         LoadTokenXD macro var, whatnext
-	        invoke NextToken
-	        mov   pline, xax
-            invoke dec2qwordA, xbx
+            invoke NextToken
+            mov   pline, xax
+            invoke dec2xwordA, xbx
             mov   &var, xax
-	        ifb <whatnext>
+            ifb <whatnext>
                 mov   xbx, pline
             endif
         endm 
@@ -178,16 +175,16 @@ Method AppRothC.LeeLineaCSV, uses xbx xsi xdi, pline:POINTER, linea:dword
             ALIGN_2 = 26
             ALIGN_3 = 38
  
-    	    lea   xbx, buffer  
-    	    formati textequ <"各X5   各X5   各X5   刎31 刎22 刎31 刎31 刎34 刎30  各X2    刎22">
-    	    variablesi textequ <check1, year, month, modernC, Temp, Rain, Evap,C_inp, FYM_inp, PC,DPM_RPM>
-	        %WriteFr xbx, formati, variablesi 
+            lea   xbx, buffer  
+            formati textequ <"各X5   各X5   各X5   刎31 刎22 刎31 刎31 刎34 刎30  各X2    刎22">
+            variablesi textequ <check1, year, month, modernC, Temp, Rain, Evap,C_inp, FYM_inp, PC,DPM_RPM>
+            %WriteFr xbx, formati, variablesi 
             _pop _ecx
             _push _ecx
-	        OCall _ecx.PrintLn, addr buffer
+            OCall _ecx.PrintLn, addr buffer
         .elseif linea == 12    
-	        OCall _ecx.PrintLn, addr points
-	    .endif
+            OCall _ecx.PrintLn, addr points
+        .endif
 
         _pop _ecx
         OCall [_ecx].inputs::Collection.Insert, xdi 
@@ -199,56 +196,56 @@ MethodEnd
 Method AppRothC.ReadInputData, uses xsi xbx
 
     local flen: XWORD
-	local pDisk : $ObjPtr(DiskStream)
-	local pMemBlock : POINTER
-	local fregTLS(,64)
+    local pDisk : $ObjPtr(DiskStream)
+    local pMemBlock : POINTER
+    local fregTLS(,64)
     local BufferLinea[1024]:CHR
     local _time : XWORD
-	local linea : DWORD
+    local linea : DWORD
     
     SetObject xsi
     
     invoke GetTickCount
     mov   _time, xax
 
-    mov linea, 0  
+    mov   linea, 0  
     New DiskStream
     mov   pDisk, xax
-	OCall pDisk::DiskStream.Init, NULL, ADDR inputfile, GENERIC_READ, \
-	                                    0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
+    OCall pDisk::DiskStream.Init, NULL, ADDR inputfile, GENERIC_READ, \
+                                        0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
     .if xax != INVALID_HANDLE_VALUE
-		 mov xbx, $OCall(pDisk::DiskStream.GetSize)
-	    .if eax != -1
-	        mov flen, xbx 
-	        MemAlloc ebx
-	        .if xax != NULL
-	            mov pMemBlock, xax
-	            OCall pDisk::DiskStream.BinRead, pMemBlock, ebx
-				.if xax
-					lea xbx, BufferLinea 
-					mov xcx , pMemBlock
-					mov xdx , 0		;	para la linea
-					.while flen > 0
-						mov al, byte ptr [xcx]
-						.if al == 0Dh 
-						.elseif al == 0Ah
-							mov byte ptr [xbx+xdx], 0
-							_pushad
-							OCall xsi.LeeLineaCSV, xbx, linea
-							_popad
-							mov xdx, -1
-							inc linea
-						.else
-							mov byte ptr [xbx+xdx], al	 
-						.endif
-						dec flen
-						inc xdx
-						inc xcx
-					.endw
-	    		.endif
-    		    MemFree pMemBlock
-	    	.endif			
-		.endif
+         mov xbx, $OCall(pDisk::DiskStream.GetSize)
+        .if eax != -1
+            mov   flen, xbx 
+            MemAlloc ebx
+            .if xax != NULL
+                mov   pMemBlock, xax
+                OCall pDisk::DiskStream.BinRead, pMemBlock, ebx
+                .if xax
+                    lea   xbx, BufferLinea 
+                    mov   xcx , pMemBlock
+                    mov   xdx , 0        ;    para la linea
+                    .while flen > 0
+                        mov   al, byte ptr [xcx]
+                        .if al == 0Dh 
+                        .elseif al == 0Ah
+                            mov   byte ptr [xbx+xdx], 0
+                            _pushad
+                            OCall xsi.LeeLineaCSV, xbx, linea
+                            _popad
+                            mov   xdx, -1
+                            inc   linea
+                        .else
+                            mov byte ptr [xbx+xdx], al     
+                        .endif
+                        dec   flen
+                        inc   xdx
+                        inc   xcx
+                    .endw
+                .endif
+                MemFree pMemBlock
+            .endif            
+        .endif
     .endif
     Destroy pDisk 
 
@@ -270,35 +267,35 @@ Method AppRothC.Run, uses xsi xbx xdi
 
     .if [xbx].inputs.dCount > 0
             
-	    invoke GetTickCount
-	    mov   _time, xax
-	
-	    New DiskStream                      ;71
-	    mov   [xbx].file_YearResult, xax
-		OCall [xbx].file_YearResult::DiskStream.Init, NULL, ADDR yearfile, GENERIC_WRITE, \
-		                                    0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
-	    
-	    New DiskStream                      ;91
-	    mov   [xbx].file_MonthResult, xax
-		OCall [xbx].file_MonthResult::DiskStream.Init, NULL, ADDR monthfile, GENERIC_WRITE, \
-		                                    0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
-	
-	    OCall xbx.Equilibrium
-	
-	    OCall xbx.RunFromMonth13
-	
-	    Destroy [xbx].file_MonthResult
-	    Destroy [xbx].file_YearResult
-	
-	    invoke GetTickCount
-	    mov   xcx, _time
-	    sub   xax, xcx
-	    mov   _time, xax
-	    lea   xsi, buffer  
-	    WriteF xsi, "\nTime of operation was 各X miliseconds", _time
-	    OCall xbx.PrintLn, addr buffer
+        invoke GetTickCount
+        mov   _time, xax
+    
+        New DiskStream                      ;71
+        mov   [xbx].file_YearResult, xax
+        OCall [xbx].file_YearResult::DiskStream.Init, NULL, ADDR yearfile, GENERIC_WRITE, \
+                                            0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+        
+        New DiskStream                      ;91
+        mov   [xbx].file_MonthResult, xax
+        OCall [xbx].file_MonthResult::DiskStream.Init, NULL, ADDR monthfile, GENERIC_WRITE, \
+                                            0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+    
+        OCall xbx.Equilibrium
+    
+        OCall xbx.RunFromMonth13
+    
+        Destroy [xbx].file_MonthResult
+        Destroy [xbx].file_YearResult
+    
+        invoke GetTickCount
+        mov   xcx, _time
+        sub   xax, xcx
+        mov   _time, xax
+        lea   xsi, buffer  
+        WriteF xsi, "\nTime of operation was 各X miliseconds", _time
+        OCall xbx.PrintLn, addr buffer
     .else
-	    OCall xbx.PrintLn, $OfsCStr("No data was loaded")
+        OCall xbx.PrintLn, $OfsCStr("No data was loaded")
     .endif
 
 MethodEnd
@@ -362,7 +359,7 @@ Method AppRothC.Equilibrium, uses xbx xdi xsi
     _push xbx  
     lea   xbx, buffer
    % WriteFr xbx, formati, variablesi
-    _pop xbx
+    _pop  xbx
     
     invoke StrSizeA, addr buffer
     dec eax
@@ -375,8 +372,7 @@ MethodEnd
 Method AppRothC.RunFromMonth13, uses xbx xdi xsi
     local buffer[1024] : CHR 
     local i : DWORD, j : DWORD
-    
-    DbgText "AppRothC.RunFromMonth13"
+
     SetObject xbx
     mov   xsi, [xbx].model         
 
@@ -391,28 +387,28 @@ Method AppRothC.RunFromMonth13, uses xbx xdi xsi
          
         fSlv8 Total_Delta = (exp(-1*Total_Rage/8035.0) - 1.0) * 1000.0
          
-    	inc   j
+        inc   j
      
         OCall [xbx].file_MonthResult::DiskStream.BinWrite, addr cCRLF, 2
-	    _push xbx  
-	    lea   xbx, buffer
-	   % WriteFr xbx, formati, variablesi
-	    _pop xbx
-	    invoke StrSizeA, addr buffer
-	    dec eax
-	    OCall [xbx].file_MonthResult::DiskStream.BinWrite, addr buffer, eax
+        _push xbx  
+        lea   xbx, buffer
+       % WriteFr xbx, formati, variablesi
+        _pop  xbx
+        invoke StrSizeA, addr buffer
+        dec   eax
+        OCall [xbx].file_MonthResult::DiskStream.BinWrite, addr buffer, eax
 
         mov   eax, [xsi].timeFact     ; 12 if monthly
         .if j == eax
             OCall [xbx].file_YearResult::DiskStream.BinWrite, addr cCRLF, 2
-		    _push xbx  
-		    lea   xbx, buffer
-		   % WriteFr xbx, formati, variablesi
-		    _pop xbx
-		    invoke StrSizeA, addr buffer
-		    dec eax
-		    OCall [xbx].file_YearResult::DiskStream.BinWrite, addr buffer, eax
-            mov    j, 0   
+            _push xbx  
+            lea   xbx, buffer
+           % WriteFr xbx, formati, variablesi
+            _pop  xbx
+            invoke StrSizeA, addr buffer
+            dec   eax
+            OCall [xbx].file_YearResult::DiskStream.BinWrite, addr buffer, eax
+            mov   j, 0   
         .endif
  
     Next i  
